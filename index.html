@@ -3,124 +3,647 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的网站</title>
+    <title>肥胖：全球健康危机的深度解析与应对策略</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        /* 基础样式 */
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #06d6a0;
+            --warning: #ffd166;
+            --danger: #ef476f;
+            --dark-bg: #1a2a6c;
+            --light-bg: #f0f7ff;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+            font-family: 'Noto Sans SC', sans-serif;
         }
         
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
+            background: linear-gradient(to bottom, #f0f7ff, #ffffff);
             color: #333;
-            background-color: #f8f9fa;
+            line-height: 1.8;
+            padding: 0;
         }
         
         .container {
-            width: 100%;
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
         
-        /* 页眉样式 */
         header {
-            background-color: #fff;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            padding: 15px 0;
-            position: sticky;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, var(--secondary) 100%);
+            color: white;
+            padding: 80px 0 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
             top: 0;
-            z-index: 100;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><circle cx="50" cy="50" r="40" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1"/></svg>');
+            background-size: 120px 120px;
+            opacity: 0.3;
         }
         
-        .logo {
-            font-size: 24px;
-            font-weight: bold;
-            color: #2c3e50;
+        h1 {
+            font-size: 3.2rem;
+            margin-bottom: 20px;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
         }
         
-        /* 主要内容区域 */
-        .main-content {
-            padding: 40px 0;
-            min-height: 80vh;
+        .subtitle {
+            font-size: 1.4rem;
+            max-width: 800px;
+            margin: 0 auto;
+            opacity: 0.9;
+            font-weight: 300;
         }
         
-        section {
-            margin-bottom: 40px;
-            padding: 20px;
+        .intro-section {
+            padding: 60px 0;
             background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         
-        h1, h2, h3 {
+        .section-title {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .section-title h2 {
+            font-size: 2.5rem;
+            color: var(--secondary);
             margin-bottom: 15px;
-            color: #2c3e50;
+            position: relative;
+            display: inline-block;
         }
         
-        p {
+        .section-title h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 2px;
+        }
+        
+        .content-card {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .chart {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .health-risks {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin: 40px 0;
+        }
+        
+        .risk-card {
+            background: rgba(76, 201, 240, 0.08);
+            border-radius: 12px;
+            padding: 25px;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(76, 201, 240, 0.15);
+        }
+        
+        .risk-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
+            border-color: rgba(76, 201, 240, 0.3);
+        }
+        
+        .risk-icon {
+            width: 60px;
+            height: 60px;
+            background: rgba(76, 201, 240, 0.15);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: var(--accent);
+            font-size: 24px;
+        }
+        
+        .risk-card h3 {
+            font-size: 1.4rem;
             margin-bottom: 15px;
-            color: #555;
+            color: var(--secondary);
         }
         
-        /* 页脚样式 */
-        footer {
-            background-color: #2c3e50;
-            color: #ecf0f1;
-            padding: 30px 0;
+        .data-point {
+            background: rgba(239, 71, 111, 0.08);
+            border-left: 4px solid var(--danger);
+            padding: 20px;
+            margin: 25px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .solution-section {
+            background: linear-gradient(to bottom, rgba(6, 214, 160, 0.05), white);
+            padding: 60px 0;
+        }
+        
+        .solution-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+        
+        .solution-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.06);
+            transition: all 0.3s ease;
+        }
+        
+        .solution-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .solution-icon {
+            font-size: 2.5rem;
+            color: var(--success);
+            margin-bottom: 20px;
+        }
+        
+        .solution-card h3 {
+            font-size: 1.6rem;
+            margin-bottom: 15px;
+            color: var(--secondary);
+        }
+        
+        .diet-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 30px 0;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .diet-table th, .diet-table td {
+            padding: 15px;
             text-align: center;
         }
         
-        /* 响应式设计 */
+        .diet-table th {
+            background: var(--primary);
+            color: white;
+            font-weight: 500;
+        }
+        
+        .diet-table tr:nth-child(even) {
+            background: rgba(67, 97, 238, 0.05);
+        }
+        
+        .conclusion {
+            background: linear-gradient(135deg, #2d388a 0%, #1a2a6c 100%);
+            color: white;
+            padding: 80px 0;
+            text-align: center;
+        }
+        
+        .conclusion h2 {
+            font-size: 2.8rem;
+            margin-bottom: 30px;
+        }
+        
+        .steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 40px 0;
+        }
+        
+        .step-card {
+            width: 220px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            backdrop-filter: blur(5px);
+        }
+        
+        .step-number {
+            display: inline-flex;
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 50%;
+            color: white;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        footer {
+            background: #1a1a2e;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 40px 0;
+            text-align: center;
+        }
+        
         @media (max-width: 768px) {
-            .main-content {
-                padding: 20px 0;
+            h1 {
+                font-size: 2.5rem;
             }
             
-            section {
-                padding: 15px;
+            .section-title h2 {
+                font-size: 2rem;
+            }
+            
+            .content-card {
+                padding: 25px;
+            }
+            
+            .chart-container {
+                height: 300px;
             }
         }
     </style>
 </head>
 <body>
-    <!-- 页眉 -->
     <header>
         <div class="container">
-            <div class="logo">我的网站</div>
+            <h1>肥胖：全球健康危机的深度解析</h1>
+            <p class="subtitle">科学认识、有效预防与应对策略——2025世界肥胖日特别报告</p>
         </div>
     </header>
-
-    <!-- 主要内容区域 -->
-    <main class="main-content">
+    
+    <section class="intro-section">
         <div class="container">
-            <section>
-                <h1>欢迎来到我的网站</h1>
-                <p>这是一个简洁的基础HTML模板，您可以在此基础上添加自己的内容。</p>
-                <p>此模板包含响应式设计，可在手机、平板和桌面设备上良好显示。</p>
-            </section>
+            <div class="content-card">
+                <h2>肥胖——被忽视的全球健康危机</h2>
+                <p>2025年3月4日是世界第十一个"肥胖日"。肥胖不仅是个人体重管理问题，1997年世界卫生组织已正式确认"肥胖"是一种"复杂、未完全理解、严重且慢性"的疾病。在营养不良天平的另一端，肥胖是当今最明显但最容易被忽视的公共卫生问题之一。</p>
+                
+                <div class="chart-container">
+                    <canvas id="globalObesityChart" class="chart"></canvas>
+                </div>
+                
+                <div class="data-point">
+                    <p><strong>关键数据：</strong>根据《柳叶刀》研究，2022年全球有超过10亿人患有肥胖症，43%的成年人超重。自1990年以来，全球成人肥胖率增加了一倍多，儿童和青少年肥胖率增加了四倍。</p>
+                </div>
+                
+                <h3>中国肥胖问题同样严峻</h3>
+                <p>根据《中国居民营养与慢性病状况报告（2020年）》，2020年我国成人超重率和肥胖率分别为34.3%和16.4%，与2002年的22.8%和7.1%相比大幅增长；6到17岁儿童青少年的超重率和肥胖率分别为11.1%和7.9%，并呈逐年递增趋势。</p>
+                
+                <p>有研究预测，若该趋势得不到有效遏制，2030年我国成人、儿童超重肥胖率将分别达到70.5%和31.8%。</p>
+            </div>
             
-            <section>
-                <h2>内容区域</h2>
-                <p>您可以在这里添加文本、图片或其他内容。</p>
-                <p>只需复制这个section元素并根据需要修改内容。</p>
-            </section>
-            
-            <section>
-                <h2>空白区域</h2>
-                <p>这个区域等待您添加内容...</p>
-            </section>
+            <div class="content-card">
+                <h2>如何判断肥胖？不仅仅是体重问题</h2>
+                <p>想知道自己是否肥胖，不能只看体重。通常有三个关键指标：BMI（身体质量指数）、腰围和体脂率。</p>
+                
+                <div style="margin: 40px 0; background: rgba(67, 97, 238, 0.05); padding: 30px; border-radius: 12px;">
+                    <iframe src="bmi-widget.html" width="100%" height="300" frameborder="0" style="border-radius: 10px;"></iframe>
+                </div>
+                
+                <h3>BMI标准与局限性</h3>
+                <p><strong>BMI标准：</strong></p>
+                <ul style="margin: 20px 0 20px 30px;">
+                    <li>&lt;18.5：消瘦</li>
+                    <li>18.5～23.9：正常</li>
+                    <li>24～27.9：超重</li>
+                    <li>≥28：肥胖</li>
+                </ul>
+                
+                <p><strong>BMI的局限性：</strong>无法区分脂肪和肌肉，也无法辨别脂肪分布位置。许多健身爱好者体重大但体脂低，而有些人BMI正常但脂肪量高，是"隐藏的胖子"。</p>
+            </div>
         </div>
-    </main>
-
-    <!-- 页脚 -->
+    </section>
+    
+    <section class="solution-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>肥胖的健康风险</h2>
+                <p>不仅仅是美观问题，更是严重的健康威胁</p>
+            </div>
+            
+            <div class="content-card">
+                <div class="health-risks">
+                    <div class="risk-card">
+                        <div class="risk-icon"><i class="fas fa-heartbeat"></i></div>
+                        <h3>心血管疾病</h3>
+                        <p>高血压、心力衰竭、冠状动脉疾病</p>
+                    </div>
+                    
+                    <div class="risk-card">
+                        <div class="risk-icon"><i class="fas fa-vial"></i></div>
+                        <h3>代谢疾病</h3>
+                        <p>糖尿病、血脂异常、代谢综合征</p>
+                    </div>
+                    
+                    <div class="risk-card">
+                        <div class="risk-icon"><i class="fas fa-dna"></i></div>
+                        <h3>癌症风险</h3>
+                        <p>乳腺癌、子宫癌、结肠癌、前列腺癌等</p>
+                    </div>
+                    
+                    <div class="risk-card">
+                        <div class="risk-icon"><i class="fas fa-lungs"></i></div>
+                        <h3>呼吸系统疾病</h3>
+                        <p>阻塞性睡眠呼吸暂停、肺栓塞</p>
+                    </div>
+                </div>
+                
+                <div class="data-point">
+                    <p><strong>关键发现：</strong>BMI每增加1个标准差，心力衰竭整体发病风险增加29%。肥胖者的脂肪肝并发症为81.8%，而BMI正常者只有13.3%。阻塞性睡眠呼吸暂停患者中，肥胖者占比高达70%。</p>
+                </div>
+                
+                <h3>肥胖导致的死亡负担</h3>
+                <p>2019年全球疾病负担研究显示：</p>
+                <ul style="margin: 20px 0 20px 30px;">
+                    <li>超重和肥胖导致的死亡在全因死亡中占比从1990年的2.8%上升至2019年的7.2%</li>
+                    <li>在慢性非传染性疾病相关死亡占比从1990年的3.9%上升至2019年的8.0%</li>
+                    <li>2019年，估计有500万非传染性疾病死亡是由过高的体质指数引起</li>
+                </ul>
+                
+                <div class="chart-container">
+                    <canvas id="mortalityChart" class="chart"></canvas>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="intro-section">
+        <div class="container">
+            <div class="section-title">
+                <h2>科学应对肥胖</h2>
+                <p>综合策略解决复杂健康问题</p>
+            </div>
+            
+            <div class="solution-grid">
+                <div class="solution-card">
+                    <div class="solution-icon"><i class="fas fa-utensils"></i></div>
+                    <h3>合理饮食</h3>
+                    <p>控制总能量摄入和保持合理膳食是体重管理的关键。三大宏量营养素的供能比应为：脂肪20%～30%，蛋白质15%～20%，碳水化合物50%～60%。</p>
+                    
+                    <div style="margin: 25px 0;">
+                        <iframe src="食物营养成分堆叠条形图.html" width="100%" height="300" frameborder="0" style="border-radius: 10px;"></iframe>
+                    </div>
+                    
+                    <h4>每日能量需求参考</h4>
+                    <table class="diet-table">
+                        <tr>
+                            <th>活动强度</th>
+                            <th>成年男性(kcal)</th>
+                            <th>成年女性(kcal)</th>
+                        </tr>
+                        <tr>
+                            <td>低强度</td>
+                            <td>1950～2150</td>
+                            <td>1600～1700</td>
+                        </tr>
+                        <tr>
+                            <td>中等强度</td>
+                            <td>2400～2550</td>
+                            <td>1950～2100</td>
+                        </tr>
+                        <tr>
+                            <td>高强度</td>
+                            <td>2800～3000</td>
+                            <td>2300～2450</td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="solution-icon"><i class="fas fa-book"></i></div>
+                    <h3>国家版"减肥指南"</h3>
+                    <p>国家卫生健康委办公厅发布的《成人肥胖食养指南（2024）》为全国各地区制定了四季食谱示例，提供科学、实用的饮食指导。</p>
+                    
+                    <div style="margin: 25px 0;">
+                        <iframe src="四季食谱组件.html" width="100%" height="300" frameborder="0" style="border-radius: 10px;"></iframe>
+                    </div>
+                    
+                    <h4>健康饮食原则</h4>
+                    <ul style="margin: 20px 0 20px 20px;">
+                        <li>一日三餐合理分配饮食</li>
+                        <li>优先选择低脂肪食材</li>
+                        <li>避免高能量、高脂肪、高糖食物</li>
+                        <li>限制含糖饮料摄入</li>
+                    </ul>
+                </div>
+                
+                <div class="solution-card">
+                    <div class="solution-icon"><i class="fas fa-running"></i></div>
+                    <h3>科学运动</h3>
+                    <p>运动原则："动则有益、多动更好、适度量力、贵在坚持"。不同人群应适配不同运动方案。</p>
+                    
+                    <h4>运动建议</h4>
+                    <ul style="margin: 20px 0 20px 20px;">
+                        <li><strong>初学者：</strong>每天30分钟中等强度有氧运动</li>
+                        <li><strong>进阶者：</strong>加入力量训练（每周2-3次）</li>
+                        <li><strong>特殊人群：</strong>根据健康状况定制方案</li>
+                    </ul>
+                    
+                    <h4>运动金字塔</h4>
+                    <div style="margin: 20px 0; text-align: center;">
+                        <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'><rect x='50' y='150' width='100' height='30' fill='%234cc9f0'/><rect x='60' y='120' width='80' height='30' fill='%234361ee'/><rect x='70' y='90' width='60' height='30' fill='%233a0ca3'/><rect x='80' y='60' width='40' height='30' fill='%231a2a6c'/><rect x='90' y='30' width='20' height='30' fill='%2306d6a0'/></svg>" alt="运动金字塔" style="max-width: 100%;">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <section class="conclusion">
+        <div class="container">
+            <h2>未来展望：应对肥胖危机</h2>
+            <p>高BMI的发生风险随年龄增长而上升。2022年，在200个国家中有147个国家的成人一生中患高BMI的风险超过50%，其中62个国家该风险超过80%。</p>
+            
+            <div class="steps">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <h3>个人层面</h3>
+                    <p>提高健康意识，养成良好生活习惯</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <h3>社会层面</h3>
+                    <p>改善食品环境，增加运动设施</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <h3>政策层面</h3>
+                    <p>实施糖税、食品标签制度等</p>
+                </div>
+                
+                <div class="step-card">
+                    <div class="step-number">4</div>
+                    <h3>医疗系统</h3>
+                    <p>加强肥胖的预防、诊断和治疗</p>
+                </div>
+            </div>
+            
+            <p style="max-width: 800px; margin: 40px auto 0; font-size: 1.2rem;">
+                肥胖不是简单的体重问题，而是复杂的全球健康危机。随着肥胖率持续攀升，我们需要采取科学、系统的方法来应对这一挑战。通过合理的饮食管理、适当的体育锻炼以及社会各界的共同努力，我们可以有效遏制肥胖的蔓延趋势，创造更健康的未来。
+            </p>
+        </div>
+    </section>
+    
     <footer>
         <div class="container">
-            <p>© 2023 我的网站. 保留所有权利。</p>
+            <p>© 2025 世界肥胖日特别报告 | 数据来源：世界卫生组织、《柳叶刀》、《中国居民营养与慢性病状况报告》</p>
+            <p>本内容仅供参考，具体健康问题请咨询专业医疗人员</p>
         </div>
     </footer>
+    
+    <script>
+        // 全球肥胖数据图表
+        const globalCtx = document.getElementById('globalObesityChart').getContext('2d');
+        const globalChart = new Chart(globalCtx, {
+            type: 'bar',
+            data: {
+                labels: ['1990', '2000', '2010', '2022'],
+                datasets: [
+                    {
+                        label: '成人肥胖率 (%)',
+                        data: [10.8, 17.2, 26.3, 43.0],
+                        backgroundColor: 'rgba(67, 97, 238, 0.7)',
+                        borderColor: '#4361ee',
+                        borderWidth: 1
+                    },
+                    {
+                        label: '儿童肥胖率 (%)',
+                        data: [3.2, 6.8, 12.5, 18.7],
+                        backgroundColor: 'rgba(239, 71, 111, 0.7)',
+                        borderColor: '#ef476f',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '百分比 (%)'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '全球肥胖率变化趋势 (1990-2022)',
+                        font: {
+                            size: 18
+                        }
+                    },
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
+        });
+        
+        // 死亡负担图表
+        const mortalityCtx = document.getElementById('mortalityChart').getContext('2d');
+        const mortalityChart = new Chart(mortalityCtx, {
+            type: 'line',
+            data: {
+                labels: ['1990', '1995', '2000', '2005', '2010', '2015', '2019'],
+                datasets: [
+                    {
+                        label: '全因死亡中肥胖占比 (%)',
+                        data: [2.8, 3.5, 4.2, 5.1, 5.9, 6.5, 7.2],
+                        borderColor: '#ef476f',
+                        backgroundColor: 'rgba(239, 71, 111, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: '慢性病死亡中肥胖占比 (%)',
+                        data: [3.9, 4.6, 5.3, 6.1, 6.8, 7.4, 8.0],
+                        borderColor: '#3a0ca3',
+                        backgroundColor: 'rgba(58, 12, 163, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '百分比 (%)'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: '肥胖导致的死亡负担变化 (1990-2019)',
+                        font: {
+                            size: 18
+                        }
+                    },
+                    legend: {
+                        position: 'top'
+                    }
+                }
+            }
+        });
+        
+        // 响应式调整
+        window.addEventListener('resize', function() {
+            globalChart.resize();
+            mortalityChart.resize();
+        });
+    </script>
 </body>
 </html>
