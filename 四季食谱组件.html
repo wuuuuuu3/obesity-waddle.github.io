@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <title>四季食谱推荐</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    #main { width: 900px; height: 600px; margin: 40px auto; }
+  </style>
+</head>
+<body>
+<!-- 四季食谱随机推荐组件，可直接插入网页使用，无依赖 -->
+<div id="seasonal-menu-widget" style="max-width:400px;margin:30px auto;padding:24px 18px;border-radius:12px;box-shadow:0 2px 12px #eee;background:#fff;font-family:'微软雅黑',sans-serif;">
+  <h3 style="text-align:center;margin-bottom:18px;">四季食谱推荐</h3>
+  <div style="margin-bottom:12px;">
+    <label for="province-select">选择省份：</label>
+    <select id="province-select" title="选择省份" style="padding:4px 8px;">
+      <option value="">请选择</option>
+      <option value="广东">广东</option>
+      <option value="四川">四川</option>
+      <option value="山东">山东</option>
+      <option value="江苏">江苏</option>
+      <option value="浙江">浙江</option>
+      <option value="自定义">自定义</option>
+    </select>
+    <input id="province-input" type="text" placeholder="输入省份" style="display:none;margin-left:8px;padding:4px 8px;width:100px;" aria-label="输入省份" />
+    <button id="menu-generate-btn" style="margin-left:10px;padding:4px 14px;border-radius:4px;border:none;background:#4caf50;color:#fff;cursor:pointer;">生成</button>
+  </div>
+  <div id="menu-result" style="margin-top:18px;"></div>
+</div>
+<script>
+// 省份-地区-季节-食谱数据
+const regionMap = {
+  '华北地区': ['北京','天津','河北','山西','内蒙古'],
+  '东北地区': ['辽宁','吉林','黑龙江'],
+  '华东地区': ['上海','江苏','浙江','安徽','福建','江西','山东'],
+  '华中地区': ['河南','湖北','湖南'],
+  '华南地区': ['广东','广西','海南'],
+  '西南地区': ['重庆','四川','贵州','云南','西藏'],
+  '西北地区': ['陕西','甘肃','青海','宁夏','新疆']
+};
+
+// 地区-季节-三餐数据结构
+const menuData = {
+  "华北地区": {
+    "春季": [], "夏季": [], "秋季": [], "冬季": []
+  },
+  "东北地区": {
+    "春季": [], "夏季": [], "秋季": [], "冬季": []
+  },
+  "华东地区": {
+    "春季": [
+      {
+        "name": "华东春季营养食谱",
+        "早餐": "豆浆（250ml）、全麦面包（50g）、煮鸡蛋（50g）、拌黄瓜（100g）",
+        "加餐1": "苹果（150g）",
+        "中餐": "米饭（60g）、清蒸鲈鱼（鲈鱼 60g）、炒青菜（青菜 100g）、紫菜蛋花汤（紫菜 5g，鸡蛋 30g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "小米粥（50g）、炒胡萝卜丝（胡萝卜 80g）、蒸南瓜（南瓜 60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ],
+    "夏季": [
+      {
+        "name": "华东夏季清爽食谱",
+        "早餐": "绿豆粥（50g）、馒头（50g）、煮鸡蛋（50g）、拌西红柿（100g）",
+        "加餐1": "香蕉（100g）",
+        "中餐": "米饭（60g）、清蒸鸡胸肉（鸡胸肉 60g）、炒丝瓜（丝瓜 100g）、冬瓜汤（冬瓜 80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "玉米粥（50g）、炒空心菜（空心菜 80g）、蒸茄子（茄子 60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ],
+    "秋季": [
+      {
+        "name": "华东秋季滋补食谱",
+        "早餐": "红枣粥（50g）、全麦面包（50g）、煮鸡蛋（50g）、拌菠菜（100g）",
+        "加餐1": "梨（150g）",
+        "中餐": "米饭（60g）、清蒸鲫鱼（鲫鱼 60g）、炒芹菜（芹菜 100g）、山药排骨汤（山药 50g，排骨 30g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "小米粥（50g）、炒南瓜（南瓜 80g）、蒸胡萝卜（胡萝卜 60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ],
+    "冬季": [
+      {
+        "name": "华东冬季温补食谱",
+        "早餐": "黑米粥（50g）、馒头（50g）、煮鸡蛋（50g）、拌萝卜丝（100g）",
+        "加餐1": "橙子（100g）",
+        "中餐": "米饭（60g）、红烧牛肉（牛肉 60g）、炒油麦菜（油麦菜 100g）、萝卜汤（萝卜 80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "玉米粥（50g）、炒菠菜（菠菜 80g）、蒸南瓜（南瓜 60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ]
+  },
+  "华中地区": {
+    "春季": [
+      {
+        "name": "华中春季营养食谱",
+        "早餐": "红薯粥（红薯 50g，大米 30g）、煮鸡蛋（50g）、拌菠菜（100g）",
+        "加餐1": "苹果（100g）",
+        "中餐": "米饭（60g）、清蒸鲫鱼（60g）、炒油麦菜（100g）、紫菜蛋花汤（80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "小米粥（50g）、炒南瓜（80g）、蒸胡萝卜（60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ],
+    "夏季": [
+      {
+        "name": "华中夏季清爽食谱",
+        "早餐": "绿豆粥（50g）、馒头（50g）、煮鸡蛋（50g）、拌黄瓜（100g）",
+        "加餐1": "西瓜（100g）",
+        "中餐": "米饭（60g）、清蒸鸡胸肉（60g）、炒丝瓜（100g）、冬瓜汤（80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "玉米粥（50g）、炒空心菜（80g）、蒸茄子（60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ],
+    "秋季": [
+      {
+        "name": "华中秋季滋补食谱",
+        "早餐": "红枣粥（50g）、全麦面包（50g）、煮鸡蛋（50g）、拌菠菜（100g）",
+        "加餐1": "梨（100g）",
+        "中餐": "米饭（60g）、清蒸鲫鱼（60g）、炒芹菜（100g）、山药排骨汤（80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "小米粥（50g）、炒南瓜（南瓜 80g）、蒸胡萝卜（胡萝卜 60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ],
+    "冬季": [
+      {
+        "name": "华中冬季温补食谱",
+        "早餐": "黑米粥（50g）、馒头（50g）、煮鸡蛋（50g）、拌萝卜丝（100g）",
+        "加餐1": "橙子（100g）",
+        "中餐": "米饭（60g）、红烧牛肉（60g）、炒油麦菜（100g）、萝卜汤（80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "玉米粥（50g）、炒菠菜（80g）、蒸南瓜（南瓜 60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ]
+  },
+  "华南地区": {
+    "春季": [
+      {
+        "name": "华南春季营养食谱",
+        "早餐": "皮蛋瘦肉粥（大米 50g，瘦肉 30g，皮蛋 20g）、蒸玉米（50g）、拌生菜（100g）",
+        "加餐1": "香蕉（100g）",
+        "中餐": "米饭（60g）、清蒸鲈鱼（60g）、炒油麦菜（100g）、冬瓜汤（80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "小米粥（50g）、炒西兰花（80g）、蒸南瓜（60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ],
+    "夏季": [
+      {
+        "name": "华南夏季清爽食谱",
+        "早餐": "椰汁燕麦粥（燕麦 40g，椰汁 100ml）、煮鸡蛋（50g）、拌黄瓜（100g）",
+        "加餐1": "芒果（100g）",
+        "中餐": "米饭（60g）、清蒸虾（60g）、炒苦瓜（100g）、冬瓜汤（80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "玉米粥（50g）、炒空心菜（80g）、蒸南瓜（60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ],
+    "秋季": [
+      {
+        "name": "华南秋季滋润食谱",
+        "早餐": "银耳莲子粥（银耳 10g，莲子 20g，大米 30g）、全麦面包（50g）、煮鸡蛋（50g）",
+        "加餐1": "柚子（100g）",
+        "中餐": "米饭（60g）、清蒸鲫鱼（60g）、炒芥兰（100g）、萝卜汤（80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "小米粥（50g）、炒南瓜（南瓜 80g）、蒸胡萝卜（胡萝卜 60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ],
+    "冬季": [
+      {
+        "name": "华南冬季温补食谱",
+        "早餐": "红豆粥（红豆 30g，大米 30g）、馒头（50g）、煮鸡蛋（50g）、拌菠菜（100g）",
+        "加餐1": "橙子（100g）",
+        "中餐": "米饭（60g）、红烧牛腩（牛腩 60g）、炒菜心（100g）、萝卜汤（80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "玉米粥（50g）、炒油麦菜（80g）、蒸南瓜（60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ]
+  },
+  "西南地区": {
+    "春季": [
+      {
+        "name": "西南春季营养食谱",
+        "早餐": "玉米粥（玉米面 40g）、馒头（50g）、煮鸡蛋（50g）、拌豌豆尖（100g）",
+        "加餐1": "苹果（100g）",
+        "中餐": "米饭（60g）、清蒸鲈鱼（60g）、炒莴笋（100g）、紫菜蛋花汤（80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "小米粥（50g）、炒南瓜（80g）、蒸胡萝卜（60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ],
+    "夏季": [
+      {
+        "name": "西南夏季清爽食谱",
+        "早餐": "绿豆粥（50g）、馒头（50g）、煮鸡蛋（50g）、拌黄瓜（100g）",
+        "加餐1": "西瓜（100g）",
+        "中餐": "米饭（60g）、清蒸鸡胸肉（60g）、炒丝瓜（100g）、冬瓜汤（80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "玉米粥（50g）、炒空心菜（80g）、蒸茄子（60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ],
+    "秋季": [
+      {
+        "name": "西南秋季滋补食谱",
+        "早餐": "红枣粥（50g）、全麦面包（50g）、煮鸡蛋（50g）、拌菠菜（100g）",
+        "加餐1": "梨（100g）",
+        "中餐": "米饭（60g）、清蒸鲫鱼（60g）、炒芹菜（100g）、山药排骨汤（80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "小米粥（50g）、炒南瓜（南瓜 80g）、蒸胡萝卜（胡萝卜 60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ],
+    "冬季": [
+      {
+        "name": "西南冬季温补食谱",
+        "早餐": "黑米粥（50g）、馒头（50g）、煮鸡蛋（50g）、拌萝卜丝（100g）",
+        "加餐1": "橙子（100g）",
+        "中餐": "米饭（60g）、红烧牛肉（60g）、炒油麦菜（100g）、萝卜汤（80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "玉米粥（50g）、炒菠菜（80g）、蒸南瓜（60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ]
+  },
+  "西北地区": {
+    "春季": [
+      {
+        "name": "西北春季营养食谱",
+        "早餐": "牛奶（250ml）、馒头（50g）、煮鸡蛋（50g）、拌菠菜（100g）",
+        "加餐1": "苹果（100g）",
+        "中餐": "米饭（60g）、清蒸羊肉（60g）、炒胡萝卜（100g）、紫菜蛋花汤（80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "小米粥（50g）、炒南瓜（80g）、蒸胡萝卜（60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ],
+    "夏季": [
+      {
+        "name": "西北夏季清爽食谱",
+        "早餐": "绿豆粥（50g）、馒头（50g）、煮鸡蛋（50g）、拌黄瓜（100g）",
+        "加餐1": "西瓜（100g）",
+        "中餐": "米饭（60g）、清蒸牛肉（60g）、炒丝瓜（100g）、冬瓜汤（80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "玉米粥（50g）、炒空心菜（80g）、蒸茄子（60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ],
+    "秋季": [
+      {
+        "name": "西北秋季滋补食谱",
+        "早餐": "红枣粥（50g）、全麦面包（50g）、煮鸡蛋（50g）、拌菠菜（100g）",
+        "加餐1": "梨（100g）",
+        "中餐": "米饭（60g）、清蒸羊肉（60g）、炒芹菜（100g）、山药排骨汤（80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "小米粥（50g）、炒南瓜（80g）、蒸胡萝卜（60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ],
+    "冬季": [
+      {
+        "name": "西北冬季温补食谱",
+        "早餐": "黑米粥（50g）、馒头（50g）、煮鸡蛋（50g）、拌萝卜丝（100g）",
+        "加餐1": "橙子（100g）",
+        "中餐": "米饭（60g）、红烧牛肉（60g）、炒油麦菜（100g）、萝卜汤（80g）",
+        "加餐2": "酸奶（100ml）",
+        "晚餐": "玉米粥（50g）、炒菠菜（80g）、蒸南瓜（60g）",
+        "油盐": "全天植物油 15g，盐 < 5g"
+      }
+    ]
+  }
+};
+const regionMenuData = menuData;
+
+// 支持“春/春季”等 key自动适配
+const seasons = ['春季','夏季','秋季','冬季'];
+const select = document.getElementById('province-select');
+const input = document.getElementById('province-input');
+select.onchange = function() {
+  if(this.value==='自定义'){
+    input.style.display='inline-block';
+    input.value='';
+    input.focus();
+  }else{
+    input.style.display='none';
+    input.value='';
+  }
+};
+
+document.getElementById('menu-generate-btn').onclick = function() {
+  let province = select.value==='自定义' ? input.value.trim() : select.value;
+  if(!province){
+    document.getElementById('menu-result').innerHTML = '<span style="color:#f44336;">请选择或输入省份</span>';
+    return;
+  }
+  // 直接查找省份对应地区（地区key需加“地区”后缀）
+  let region = '';
+  for(const r in regionMap){
+    if(regionMap[r].includes(province)){
+      region = r;
+      break;
+    }
+  }
+  if(!region || !regionMenuData[region]){
+    document.getElementById('menu-result').innerHTML = '<span style="color:#f44336;">未找到该省份对应地区的食谱</span>';
+    return;
+  }
+  // 让每次生成都真正随机（使用更强的时间扰动）
+  function getRandomInt(max) {
+    // 使用当前时间和Math.random混合，确保每次都不同
+    return Math.floor(Math.abs(Math.sin(Date.now() + Math.random()) * 10000) % max);
+  }
+  let menu = regionMenuData[region];
+  let html = `<b style='font-size:16px;'>${province ? province : ''}${region ? `（${region}）` : ''}四季食谱</b><ul style='margin:10px 0 0 18px;padding:0;'>`;
+  for(let i=0;i<seasons.length;i++){
+    let season = seasons[i];
+    // 兼容“春/春季”key
+    let dishArr = menu[season] || menu[season.replace('季','')] || menu[season.replace('季','')+'季'];
+    let dish = dishArr && dishArr.length ? dishArr[getRandomInt(dishArr.length)] : null;
+    if(dish && typeof dish === 'object') {
+      html += `<li style='margin-bottom:10px;'><b>${season}：</b><br>`;
+      if(dish['name']) html += `<span style='color:#607d8b;font-weight:bold;'>${dish['name']}</span><br>`;
+      if(dish['早餐']) html += `<span style='color:#4caf50'>早餐：</span>${dish['早餐']}<br>`;
+      if(dish['加餐1'] && dish['加餐1']!=='/' && dish['加餐1']!=='无') html += `<span style='color:#8bc34a'>加餐1：</span>${dish['加餐1']}<br>`;
+      if(dish['中餐']) html += `<span style='color:#ff9800'>中餐：</span>${dish['中餐']}<br>`;
+      if(dish['加餐2'] && dish['加餐2']!=='/' && dish['加餐2']!=='无') html += `<span style='color:#8bc34a'>加餐2：</span>${dish['加餐2']}<br>`;
+      if(dish['晚餐']) html += `<span style='color:#2196f3'>晚餐：</span>${dish['晚餐']}<br>`;
+      if(dish['油盐']) html += `<span style='color:#795548'>油盐：</span>${dish['油盐']}<br>`;
+      html += `</li>`;
+    } else if(dish) {
+      html += `<li><b>${season}：</b>${dish}</li>`;
+    } else {
+      html += `<li><b>${season}：</b><span style='color:#aaa'>（请补充食谱）</span></li>`;
+    }
+  }
+  html += '</ul>';
+  document.getElementById('menu-result').innerHTML = html;
+};
+</script>
+</body>
+</html>

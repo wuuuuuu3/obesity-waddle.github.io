@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <title>食物营养成分堆叠条形图</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 本地引入 ECharts，确保和本文件在同一目录 -->
+  <script src="echarts.min.js"></script>
+  <style>
+    .nutrition-bar-chart { width: 100%; max-width: 700px; height: 400px; margin: 40px auto; }
+  </style>
+</head>
+<body>
+<div class="nutrition-bar-chart" id="nutrition-bar-chart"></div>
+<script>
+// 可直接插入网页的ECharts堆叠条形图组件
+var chartDom = document.getElementById('nutrition-bar-chart');
+var myChart = echarts.init(chartDom);
+var option = {
+  title: { text: '食物营养成分表', left: 'center' },
+  tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+  legend: { top: 30 },
+  grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
+  xAxis: { type: 'value' },
+  yAxis: { type: 'category', data: [
+    '谷物（初级农产品）',
+    '主食制品-面制品',
+    '主食制品-米饭',
+    '全谷物',
+    '杂豆类',
+    '粉条、粉丝、淀粉类',
+    '糕点和油炸类',
+    '薯芋类',
+    '蔬菜类（综合）',
+    '嫩茎叶花菜类-深色',
+    '嫩茎叶花菜类-浅色',
+    '茄果类',
+    '根茎类'
+  ] },
+  series: [
+    {
+      name: '蛋白质',
+      type: 'bar',
+      stack: '总量',
+      label: { show: true },
+      data: [2.5, 0.4, 1.9, 2.5, 5.5, 0.3, 1.4, 1.9, 4.5, 7.3, 7.2, 3.8, 3.2]
+    },
+    {
+      name: '脂肪',
+      type: 'bar',
+      stack: '总量',
+      label: { show: true },
+      data: [0.5, 0.4, 0.4, 0.7, 0.9, 0.2, 2.6, 0.2, 0.7, 1.2, 1.4, 0.2, 0.5]
+    },
+    {
+      name: '碳水',
+      type: 'bar',
+      stack: '总量',
+      label: { show: true },
+      data: [19, 18, 19.4, 18, 13, 21.2, 13, 20, 16, 14, 14.2, 7.9, 18.2]
+    }
+  ]
+};
+myChart.setOption(option);
+</script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>人体疾病分布可视化（ECharts模板）</title>
+  <style>
+    #main { width: 768px; height: 768px; margin: 0 auto; background: #f8f8f8; }
+    .echarts-tooltip {
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <div id="main"></div>
+  <div id="left-list" style="position:absolute;left:10px;top:60px;width:200px;z-index:10;font-size:14px;"></div>
+  <script src="echarts.min.js"></script>
+  <script>
+    // 人体部位疾病坐标（基于600x900图片，坐标可微调）
+    // 1. 需要精确定位的点（贴合人体）
+    const organPoints = [
+      { name: '高血压', x: 384, y: 170 }, // 颈部下方
+      { name: '胆固醇和血脂异常', x: 384, y: 210 }, // 胸部
+      { name: '冠状动脉疾病', x: 384, y: 240 }, // 心脏
+      { name: '心力衰竭', x: 384, y: 260 }, // 心脏下方
+      { name: '乳腺癌', x: 340, y: 260 }, // 左胸
+      { name: '胃食管反流病 (GERD)', x: 384, y: 320 }, // 胃部
+      { name: '脂肪肝和肝硬化', x: 420, y: 340 }, // 右上腹
+      { name: '胆结石或其他胆囊疾病', x: 420, y: 360 }, // 右腹
+      { name: '胰腺癌', x: 384, y: 370 }, // 腹部中
+      { name: '肾癌', x: 320, y: 400 }, // 左腰
+      { name: '糖尿病和糖尿病前期', x: 384, y: 420 }, // 腹部下
+      { name: '结肠癌', x: 384, y: 500 }, // 腹部最下
+      { name: '子宫癌', x: 400, y: 570 }, // 骨盆中
+      { name: '卵巢癌', x: 360, y: 600 }, // 骨盆左下
+      { name: '前列腺癌', x: 384, y: 670 }, // 会阴
+      { name: '静脉曲张', x: 340, y: 740 }, // 左小腿
+      { name: '血栓（深静脉血栓形成和肺栓塞）', x: 420, y: 740 }, // 右小腿
+      { name: '关节炎、痛风、下背痛或其他关节疾病', x: 384, y: 760 } // 膝盖
+    ];
+    // 2. 不能精确定位的疾病，左侧列表展示
+    const leftList = [
+      '抑郁、焦虑和躯体变形障碍',
+      '阻塞性睡眠呼吸暂停',
+      '皮肤疾病',
+      '代谢综合征',
+      '女性月经失调、不育或流产风险增大、多囊卵巢综合征',
+      '男性睾酮水平降低、勃起功能障碍或生育能力下降'
+    ];
+
+    // 背景人体图（本地图片，600x900）
+    const bodyImg = 'body.png';
+
+    const chart = echarts.init(document.getElementById('main'));
+    chart.setOption({
+      xAxis: {
+        min: 0,
+        max: 768, // 按body.png实际宽度
+        show: false
+      },
+      yAxis: {
+        min: 0,
+        max: 768, // 按body.png实际高度
+        show: false,
+        inverse: true // 使y轴从上到下
+      },
+      grid: { left: 0, right: 0, top: 0, bottom: 0 },
+      series: [
+        // 背景图片
+        {
+          type: 'custom',
+          renderItem: function(params, api) {
+            return {
+              type: 'image',
+              style: {
+                image: bodyImg,
+                x: 0,
+                y: 0,
+                width: 768,
+                height: 768,
+                opacity: 1
+              }
+            };
+          },
+          data: [0],
+          z: 1
+        },
+        // 疾病标注点
+        {
+          type: 'scatter',
+          symbolSize: 7, // 红点更小
+          data: organPoints.map(d => [d.x, d.y]),
+          label: {
+            show: true,
+            formatter: function(params) {
+              return organPoints[params.dataIndex].name;
+            },
+            position: 'right',
+            fontSize: 13,
+            color: '#333',
+            backgroundColor: 'rgba(255,255,255,0.8)',
+            borderRadius: 4,
+            padding: [2, 6]
+          },
+          itemStyle: {
+            color: '#d73027',
+            borderColor: '#fff',
+            borderWidth: 2
+          },
+          z: 2
+        }
+      ],
+      tooltip: {
+        trigger: 'item',
+        formatter: function(params) {
+          return organPoints[params.dataIndex]?.name || '';
+        },
+        extraCssText: 'font-size:15px;'
+      }
+    });
+
+    // 渲染左侧列表
+    document.getElementById('left-list').innerHTML =
+      '<b>系统性疾病/无法精确定位：</b><ul style="padding-left:18px;">' +
+      leftList.map(item => `<li>${item}</li>`).join('') + '</ul>';
+  </script>
+</body>
+</html>
