@@ -10,11 +10,8 @@
 </head>
 <body>
   <div id="main"></div>
-  <script src="echarts.min.js"></script>
-  <script src="countryNameMap.js"></script>
-  <!-- <script src="地图1-2.js"></script> -->
+  <script src="echarts.min.js"></script>  <!-- <script src="地图1-2.js"></script> -->
   <script>
-    // 先引入 countryNameMap.js 后，在这里动态加载地图主逻辑，避免重复声明
     var script = document.createElement('script');
     script.src = '地图1-2.js';
     document.body.appendChild(script);
